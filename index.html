@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>upload image</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+    <div class="wrap">
+       
+        <div class="cover clearfix"> 
+            <a href="" class="upload">upload</a>
+            <input accept="image/*" id="uploadImage" type="file">
+           
+        </div>
+      
+           
+        <div class="pic">
+            <canvas id="myCanvas" width="800px" height="600px" >
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+           
+        </div>
+
+        <div class="button clearfix">
+            <a class="save">save</a>
+            <a class="download"  download="cut.png"  >download</a>
+        </div>
+        
+
+    </div>
+    
+<script>
+    let url;
+    let percent = 0.2;
+    $(document).ready(function() {
+        
+        $(".cover > .upload").click(function(e) {
+            e.preventDefault();
+            $("#uploadImage").click();
+        });
+
+        $("#uploadImage").change(function(e){
+            readImage(e.target);
+        });
+
+        $('.download').click(function(){
+            $('.download').attr("href", url);
+        });
+
+
+
+
+        let resize = false; //true 代表正在進行resize 讓拖曳效果禁止
+         //左上角resize---------------------------------------------------------------------------
+        $('.pic').on('mousedown', '#leftTop', function(e) {
+            resize= true;
+            let clicking= true;
+            
+            let x, y ;
+            y = e.clientY
+            x = e.clientX;
+            let w =  $('.pic >#myCut').width();
+            let h =  $('.pic >#myCut').height();
+            $('.pic').on('mousemove', '#leftTop', function(e) {
+                
+                if(clicking == false){
+                    return;
+                }else{
+                    $('.pic >#myCut').offset({left:e.clientX,top:e.clientY});
+                    $('.pic >#myCut').width(w + x - e.clientX);
+                    $('.pic >#myCut').height(h + y- e.clientY);
+                }
+                   
+                    
+                
+            });
+            $('.pic').on('mouseup', '#leftTop', function(e) {
+                clicking=false;
+                resize =false;
+            });
+            $('.pic').on('mouseleave ', '#leftTop', function(e) {
+                clicking=false;
+                resize =false;
+            });
+          
+        });
+        //左下角resize---------------------------------------------------------------------------
+        $('.pic').on('mousedown', '#leftBottom', function(e) {
+            resize= true;
+            let clicking= true;
+            let x, y ;
+            y = e.clientY
+            x = e.clientX;
+            let w =  $('.pic >#myCut').width();
+            let h =  $('.pic >#myCut').height();
+            $('.pic').on('mousemove', '#leftBottom', function(e) {
+                
+                if(clicking == false){
+                    return;
+                }else{
+                    $('.pic >#myCut').offset({left:e.clientX});
+                    $('.pic >#myCut').width(w + x - e.clientX);
+                    $('.pic >#myCut').height(h + e.clientY -y);
+                }
+                
+            });
+            $('.pic').on('mouseup', '#leftBottom', function(e) {
+                clicking=false;
+                resize =false;
+            });
+            $('.pic').on('mouseleave ', '#leftBottom', function(e) {
+                clicking=false;
+                resize =false;
+            });
+        });
+        //右上角resize---------------------------------------------------------------------------
+        $('.pic').on('mousedown', '#rightTop', function(e) {
+            resize= true;
+            console.log(resize);
+            let clicking= true;
+            let x, y ;
+            y = e.clientY
+            x = e.clientX;
+            let w =  $('.pic >#myCut').width();
+            let h =  $('.pic >#myCut').height();
+            $('.pic').on('mousemove', '#rightTop', function(e) {
+                
+                if(clicking == false){
+                    return;
+                }else{
+                    $('.pic >#myCut').offset({top:e.clientY});
+                    $('.pic >#myCut').width(w + e.clientX -x);
+                    $('.pic >#myCut').height(h + y -e.clientY);
+                }
+                
+            });
+            $('.pic').on('mouseup', '#rightTop', function(e) {
+                clicking=false;
+                resize =false;
+            });
+            $('.pic').on('mouseleave ', '#rightTop', function(e) {
+                clicking=false;
+                resize =false;
+            });
+        });
+        //右下角resize---------------------------------------------------------------------------
+        $('.pic').on('mousedown', '#rightBottom', function(e) {
+            resize= true;
+            console.log(resize);
+            let clicking= true;
+            let x, y ;
+            y = e.clientY
+            x = e.clientX;
+            let w =  $('.pic >#myCut').width();
+            let h =  $('.pic >#myCut').height();
+            $('.pic').on('mousemove', '#rightBottom', function(e) {
+                
+                if(clicking == false){
+                    return;
+                }else{
+                    console.log('a');
+                   
+                    $('.pic >#myCut').width(w + e.clientX -x);
+                    $('.pic >#myCut').height(h + e.clientY -y);
+                }
+                
+            });
+            $('.pic').on('mouseup', '#rightBottom', function(e) {
+                clicking=false;
+                resize =false;
+            });
+            $('.pic').on('mouseleave ', '#rightBottom', function(e) {
+                clicking=false;
+                resize =false;
+            });
+        });
+
+        //拖曳方框位置---------------------------------------------------------------------
+       
+        $('.pic').on('mousedown', '#myCut', function(e) {
+            let clicking = false;
+            let downX, downY;
+            if(resize==false){
+                console.log(resize);
+                clicking = true;
+                downX = e.pageX - $('.pic > #myCut').offset().left;
+                downY = e.pageY - $('.pic > #myCut').offset().top;
+                $('.pic').on('mousemove', '#myCut', function(e) {
+                    if(clicking == false) {
+                        return
+                    }else{
+                    $('.pic > #myCut').offset({top:e.pageY-downY,left:e.pageX -downX})
+                    
+                    }
+                });
+            }
+            
+            $('.pic').on('mouseup', '#myCut', function(e) {
+                clicking = false;
+            });
+        });
+        
+
+
+
+
+
+        $('.save').click(function(){
+
+            let myCanvas = document.getElementById('myCanvas');
+            let ctx = myCanvas.getContext('2d');
+            let left = $('.pic >#myCut').position().left;
+            let top = $('.pic >#myCut').position().top;
+            let w = $('.pic >#myCut').width();
+            let h = $('.pic >#myCut').height();
+           
+        
+            //新增一個 cnavas 存放截圖畫面 
+            $(".pic").append('<canvas id="finish">Your browser does not support the HTML5 canvas tag.</canvas>');
+            //'+"width="+w+" height="+h+'  放在 html 標籤裡面也是一個方法
+            $('#finish').css('top', top);
+            $('#finish').css('left', left);
+
+            let myFinish = document.getElementById('finish');
+            //使用 canvas 的 API
+            myFinish.width=w;
+            myFinish.height=h;
+
+            let ctx2 = myFinish.getContext('2d');
+            console.log(w,h,left,top);
+          
+            ctx2.drawImage(myCanvas,left,top,w,h,0,0,w,h);
+            url =myFinish.toDataURL();
+            //清除 myCanvas 
+            let picWidth = $('.pic').width();
+            let picHeight = $('.pic').height();
+            ctx.clearRect(0,0,picWidth,picHeight);
+
+            $('.pic > #myCut').hide();
+        });
+  
+        
+        
+        
+    });
+
+    
+    let setWidth;
+    let setHeight;
+
+    let setX;
+    let setY;
+
+    function readImage(input) {
+        if ( input.files && input.files[0] ) {
+            let FR= new FileReader();
+            FR.onload = function(e) {
+                //e.target.result = base64 format picture
+                // $('#img').attr( "src", e.target.result );
+                
+                let myCanvas = document.getElementById('myCanvas');
+                let ctx = myCanvas.getContext('2d');
+                let img = new Image();
+                
+                
+                img.onload = function(){
+                    let imgWidth = img.width;
+                    let picWidth = $('.pic').width();
+
+                    let imgHeight = img.height;
+                    let picHeight = $('.pic').height();
+
+                    // let setWidth;
+                    // let setHeight;
+
+                    //等比例縮放Size
+                    if(imgWidth>0 && imgHeight>0){    
+                        if(imgWidth/imgHeight >= picWidth/picHeight){    
+                            if(imgWidth > picWidth){      
+                                setWidth = picWidth;    
+                                setHeight = (imgHeight*picWidth)/imgWidth;    
+                            }else{    
+                                setWidth = imgWidth;      
+                                setHeight = imgHeight;    
+                            }    
+                        }else{    
+                            if(imgHeight>picHeight){      
+                                setHeight = picHeight;    
+                                setWidth = (imgWidth*picHeight)/imgHeight;            
+                            }else{    
+                                setWidth = imgWidth;      
+                                setHeight = imgHeight;    
+                            }    
+                        }    
+                    }
+
+                    // let setX;
+                    // let setY;
+
+                    let myCanvasX =$('#myCanvas').position().left;
+                    let picMidX = myCanvasX + picWidth/2;
+                    setX = picMidX - setWidth/2 - myCanvasX ;
+                 
+                    let myCanvasY =$('#myCanvas').position().top;
+                    let picMidY = myCanvasY + picHeight/2;
+                    setY = picMidY - setHeight/2 - myCanvasY ;
+
+
+                    //清除畫布
+                    ctx.clearRect(0,0,picWidth,picHeight)
+                    console.log(setX, setY, setWidth,setHeight);
+                    
+                    ctx.drawImage(img, setX, setY, setWidth,setHeight);
+                    
+                   
+
+
+                    createCut(setX, setY, setWidth, setHeight);
+                   
+                };
+                img.src = URL.createObjectURL(input.files[0]);
+                
+            };       
+            FR.readAsDataURL(input.files[0]);
+            
+        }
+    }
+    function createCut(setX,setY,setWidth,setHeight){
+        // $(".pic").append('<canvas id="myCut">Your browser does not support the HTML5 canvas tag.<div id="leftTop"></div></canvas>');
+        $(".pic").append('<div id="myCut"><div id="leftTop"></div><div id="leftBottom"></div><div id="rightTop"></div><div id="rightBottom"></div></div>');
+        
+        
+        $('.pic >#myCut').width(setWidth*percent);
+        $('.pic >#myCut').height(setHeight*percent);
+
+        let cutX = (setWidth-setWidth*percent)/2;
+        let cutY = (setHeight-setHeight*percent)/2;
+
+        // padding is 2px
+        $('.pic >#myCut').css('top', setY+2+cutY+ "px");
+        $('.pic >#myCut').css('left', setX+2+cutX + "px");
+
+        $('.pic >#myCanvas').css('opacity', 0.5);
+    }
+    
+
+   
+
+</script>
+</body>
+</html>
